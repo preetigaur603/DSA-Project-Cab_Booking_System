@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Cab Booking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        header{
+            background-image: url("{{ url_for('static', filename='cab.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }   
+    </style>
+</head>
+<body background="cab.jpg">
+    <header>
+        <nav>
+            <div class="logo">Cab Service</div>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="#" onclick="location.href='/login'">Book a Ride</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Sign Up</a></li>
+            </ul>
+        </nav>
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Get There Effortlessly</h1>
+                <p>Fast, reliable, and affordable rides at your fingertips.</p>
+                <div class="booking-widget">
+                    <input type="text" placeholder="Pickup Location">
+                    <input type="text" placeholder="Destination">
+                    <button class="book-button" onclick="location.href='/login'">Book a Ride</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="why-choose-us">
+        <h2>Why Choose Us?</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Safe and Secure</h3>
+                <p>Verified drivers and real-time ride tracking for your peace of mind.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-tag"></i>
+                <h3>Transparent Pricing</h3>
+                <p>Know your fare estimate before you book your ride.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-clock"></i>
+                <h3>24/7 Availability</h3>
+                <p>Request a ride anytime, day or night.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Easy Booking</h3>
+                <p>Quickly book a ride with just a few taps on your screen.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <i class="fas fa-map-pin"></i>
+                <p>Enter your pickup location.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <i class="fas fa-flag"></i>
+                <p>Specify your destination.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <i class="fas fa-car"></i>
+                <p>Choose your ride option.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <i class="fas fa-credit-card"></i>
+                <p>Confirm and pay securely.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <i class="fas fa-location-arrow"></i>
+                <p>Track your ride in real-time.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="call-to-action">
+        <h2>Ready to Ride?</h2>
+        <button class="book-button large" onclick="location.href='/login'">Book Your Ride Now</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Your Ride Service. All rights reserved.</p>
+        <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </footer>
+
+</body>
+</html>

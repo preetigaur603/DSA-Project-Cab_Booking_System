@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Driver Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='driver-dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="dashboard-header">
+        <nav>
+            <div class="logo">Cab Service</div>
+            <ul>
+                <li><a href="{{ url_for('driver_dashboard') }}">Dashboard</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard-container driver-view">
+        <section class="dashboard-sidebar">
+            <h3>Account</h3>
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-list-alt"></i> Available Rides</a></li>
+                <li><a href="#"><i class="fas fa-money-bill-wave"></i> Earnings</a></li>
+                <li><a href="#"><i class="fas fa-history"></i> Trip History</a></li>
+                <li><a href="#"><i class="fas fa-user-cog"></i> Profile & Vehicle</a></li>
+            </ul>
+        </section>
+
+        <section class="dashboard-content">
+            <h2>Welcome, {% if driver %}{{ driver.name }}{% else %}Driver{% endif %}!</h2>
+
+            <div class="driver-dashboard-grid">
+                <div class="dashboard-card real-time-map-card">
+                    <h3>Real-time Map</h3>
+                    <div class="map-container">
+                        <img src="{{ url_for('static', filename='placeholder-map.png') }}" alt="Real-time Map">
+                    </div>
+                </div>
+
+                <div class="dashboard-card available-rides-card">
+                    <h3>Available Rides</h3>
+                    <ul class="ride-request-list">
+                        {% if available_rides %}
+                        {% for ride in available_rides %}
+                        <li>
+                            <span>Pickup: {{ ride.pickup_location }}</span><br>
+                            <span>Destination: {{ ride.dropoff_location }}</span><br>
+                            <span>Est. Fare: ${{ ride.fare if ride.fare is not none else 'N/A' }}</span><br>
+                            <span>Passenger Rating: <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="far fa-star"></i> <i class="far fa-star"></i></span>
+                            <button class="accept-button">Accept Ride</button>
+                        </li>
+                        {% endfor %}
+                        {% else %}
+                        <li>No new rides available.</li>
+                        {% endif %}
+                    </ul>
+                    <a href="#">View All Available Rides</a>
+                </div>
+
+                <div class="dashboard-card earnings-card">
+                    <h3>Earnings</h3>
+                    <p class="today-earnings">Today's Earnings: <strong>${{ earnings_today }}</strong></p>
+                    <p class="this-week-earnings">This Week's Earnings: <strong>${{ earnings_week }}</strong></p>
+                    <a href="#">View Full Earnings Report</a>
+                </div>
+
+                <div class="dashboard-card trip-history-card">
+                    <h3>Trip History</h3>
+                    <ul class="trip-list">
+                        {% if trips %}
+                        {% for trip in trips %}
+                        <li>
+                            <span>Date: {{ trip.pickup_time.strftime('%Y-%m-%d %I:%M %p') if trip.pickup_time }}</span><br>
+                            <span>From: {{ trip.pickup_location }}</span><br>
+                            <span>To: {{ trip.dropoff_location }}</span><br>
+                            <span>Fare: ${{ trip.fare if trip.fare is not none else 'N/A' }}</span>
+                        </li>
+                        {% endfor %}
+                        {% else %}
+                        <li>No recent trip history.</li>
+                        {% endif %}
+                    </ul>
+                    <a href="#">View All Trip History</a>
+                </div>
+
+                <div class="dashboard-card profile-vehicle-card">
+                    <h3>Profile & Vehicle Information</h3>
+                    <p>View and manage your personal and vehicle details.</p>
+                    <a href="#">Go to Profile & Vehicle Settings</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Your Ride Service - Driver. All rights reserved.</p>
+        <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Cab Service</div>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="#">Book a Ride</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="login-container">
+        <section id="login-choice">
+            <h2>Login As</h2>
+            <button id="user-login-btn">User</button>
+            <button id="driver-login-btn">Driver</button>
+        </section>
+
+        <section id="user-login-form" class="login-form" style="display:none;">
+            <h2>User Login</h2>
+            {% if error %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+            <form action="{{ url_for('login') }}" method="POST" id="user-login-form-submit">
+                <input type="hidden" name="role" value="user">
+                <div class="form-group">
+                    <label for="user-login-email">Email or Username</label>
+                    <input type="text" id="user-login-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-login-password">Password</label>
+                    <input type="password" id="user-login-password" name="password" required>
+                </div>
+                <button type="submit" class="button">Login as User</button>
+                <p class="register-link">Don't have an account? <a href="{{ url_for('register', type='user') }}">Register as User</a></p>
+            </form>
+        </section>
+
+        <section id="driver-login-form" class="login-form" style="display:none;">
+            <h2>Driver Login</h2>
+            {% if error %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+            <form action="{{ url_for('login') }}" method="POST" id="driver-login-form-submit">
+                <input type="hidden" name="role" value="driver">
+                <div class="form-group">
+                    <label for="driver-login-email">Email or Username</label>
+                    <input type="text" id="driver-login-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-login-password">Password</label>
+                    <input type="password" id="driver-login-password" name="password" required>
+                </div>
+                <button type="submit" class="button">Login as Driver</button>
+                <p class="register-link">Don't have an account? <a href="{{ url_for('register', type='driver') }}">Register as Driver</a></p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Your Ride Service. All rights reserved.</p>
+        <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userLoginBtn = document.getElementById('user-login-btn');
+            const driverLoginBtn = document.getElementById('driver-login-btn');
+            const userLoginForm = document.getElementById('user-login-form');
+            const driverLoginForm = document.getElementById('driver-login-form');
+            const loginChoice = document.getElementById('login-choice');
+
+            userLoginBtn.addEventListener('click', function() {
+                loginChoice.style.display = 'none';
+                userLoginForm.style.display = 'block';
+                driverLoginForm.style.display = 'none';
+            });
+
+            driverLoginBtn.addEventListener('click', function() {
+                loginChoice.style.display = 'none';
+                userLoginForm.style.display = 'none';
+                driverLoginForm.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

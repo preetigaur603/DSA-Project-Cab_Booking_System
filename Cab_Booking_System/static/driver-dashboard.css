@@ -1,0 +1,46 @@
+
+.driver-view .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+}
+
+.driver-view .real-time-map-card .map-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.driver-view .available-rides-card .ride-request-list li {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.driver-view .available-rides-card .ride-request-list li span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+    color: #555;
+}
+
+.driver-view .available-rides-card .ride-request-list li .accept-button {
+    margin-top: 10px;
+}
+
+.driver-view .earnings-card {
+    text-align: center;
+}
+
+.driver-view .trip-history-card .trip-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.driver-view .trip-history-card .trip-list li:last-child {
+    border-bottom: none;
+}
+
+.driver-view .profile-vehicle-card p {
+    margin-bottom: 15px;
+}

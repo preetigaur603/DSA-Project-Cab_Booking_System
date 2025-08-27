@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Cab Service</div>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="register-container">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <section id="user-register-section" class="register-form user-register" style="display:none;">
+            <h2>Register as User</h2>
+            <form action="{{ url_for('register') }}" method="POST">
+                <input type="hidden" name="role" value="user">
+                <div class="form-group">
+                    <label for="user-reg-name">Full Name</label>
+                    <input type="text" id="user-reg-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-reg-email">Email Address</label>
+                    <input type="email" id="user-reg-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-reg-phone">Phone Number</label>
+                    <input type="tel" id="user-reg-phone" name="phone">
+                </div>
+                <div class="form-group">
+                    <label for="user-reg-password">Password</label>
+                    <input type="password" id="user-reg-password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-reg-confirm-password">Confirm Password</label>
+                    <input type="password" id="user-reg-confirm-password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="button">Register as User</button>
+                <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+            </form>
+        </section>
+
+        <section id="driver-register-section" class="register-form driver-register" style="display:none;">
+            <h2>Register as Driver</h2>
+            <form action="{{ url_for('register') }}" method="POST">
+                <input type="hidden" name="role" value="driver">
+                <div class="form-group">
+                    <label for="driver-reg-name">Full Name</label>
+                    <input type="text" id="driver-reg-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-reg-email">Email Address</label>
+                    <input type="email" id="driver-reg-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-reg-phone">Phone Number</label>
+                    <input type="tel" id="driver-reg-phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-reg-vehicle">Vehicle Type</label>
+                    <input type="text" id="driver-reg-vehicle" name="vehicle_type" placeholder="e.g., Sedan, SUV" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-reg-license">Driver's License Number</label>
+                    <input type="text" id="driver-reg-license" name="license_number" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-reg-password">Password</label>
+                    <input type="password" id="driver-reg-password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-reg-confirm-password">Confirm Password</label>
+                    <input type="password" id="driver-reg-confirm-password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="button">Register as Driver</button>
+                <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Your Ride Service. All rights reserved.</p>
+        <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userRegisterSection = document.getElementById('user-register-section');
+            const driverRegisterSection = document.getElementById('driver-register-section');
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+
+            if (type === 'user') {
+                userRegisterSection.style.display = 'block';
+                driverRegisterSection.style.display = 'none';
+            } else if (type === 'driver') {
+                userRegisterSection.style.display = 'none';
+                driverRegisterSection.style.display = 'block';
+            } else {
+                // Default to showing user registration
+                userRegisterSection.style.display = 'block';
+                driverRegisterSection.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

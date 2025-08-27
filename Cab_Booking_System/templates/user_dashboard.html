@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="dashboard-header">
+        <nav>
+            <div class="logo">Cab Service</div>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="#">Book a Ride</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <section class="dashboard-sidebar">
+            <h3>Account</h3>
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-history"></i> Ride History</a></li>
+                <li><a href="#"><i class="fas fa-map-marked-alt"></i> Saved Places</a></li>
+                <li><a href="#"><i class="fas fa-credit-card"></i> Payment Methods</a></li>
+                <li><a href="#"><i class="fas fa-user-cog"></i> Profile Settings</a></li>
+            </ul>
+        </section>
+
+        <section class="dashboard-content">
+            <h2>Welcome, {% if user %}{{ user.name }}{% else %}User{% endif %}!</h2>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card book-ride-card">
+                    <h3>Book a New Ride</h3>
+                    <div class="booking-widget">
+                        <input type="text" id="pickup-location" placeholder="Pickup Location" oninput="suggestLocations('pickup')">
+                        <ul id="pickup-suggestions" class="location-suggestion"></ul>
+                        <input type="text" id="destination" placeholder="Destination" oninput="suggestLocations('destination')">
+                        <ul id="destination-suggestions" class="location-suggestion"></ul>
+                        <button class="book-button" onclick="findNearestDriver()">Book Now</button>
+                    </div>
+                </div>
+
+                <div class="dashboard-card ride-history-card">
+                    <h3>Ride History</h3>
+                    <ul class="ride-list">
+                        {% if rides %}
+                        {% for ride in rides %}
+                        <li>
+                            <span>Date: {{ ride.pickup_time.strftime('%Y-%m-%d %I:%M %p') if ride.pickup_time }}</span><br>
+                            <span>From: {{ ride.pickup_location }}</span><br>
+                            <span>To: {{ ride.dropoff_location }}</span><br>
+                            <span>Driver: {% if ride.driver %}{{ ride.driver.name }}{% else %}N/A{% endif %}</span><br>
+                            <span>Fare: Rs. {{ ride.fare if ride.fare is not none else 'N/A' }}</span>
+                        </li>
+                        {% endfor %}
+                        {% else %}
+                        <li>No recent ride history.</li>
+                        {% endif %}
+                    </ul>
+                    <a href="#">View All Ride History</a>
+                </div>
+
+                <div class="dashboard-card saved-places-card">
+                    <h3>Saved Places</h3>
+                    <ul class="saved-places-list">
+                        {% if saved_places %}
+                        {% for place in saved_places %}
+                        <li>{{ place.name }} <button class="edit-button"><i class="fas fa-edit"></i></button></li>
+                        {% endfor %}
+                        {% else %}
+                        <li>No saved places.</li>
+                        {% endif %}
+                        <button class="add-button"><i class="fas fa-plus"></i> Add New Place</button>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card payment-methods-card">
+                    <h3>Payment Methods</h3>
+                    <ul class="payment-methods-list">
+                        {% if payments %}
+                        {% for payment in payments %}
+                        <li><i class="fab fa-cc-visa"></i> ****-****-****-{{ payment.card_number[-4:] if payment.card_number }} <button class="edit-button"><i class="fas fa-edit"></i></button></li>
+                        {% endfor %}
+                        {% else %}
+                        <li>No payment methods added.</li>
+                        {% endif %}
+                        <button class="add-button"><i class="fas fa-plus"></i> Add New Payment Method</button>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card profile-card">
+                    <h3>Profile</h3>
+                    <p>View and edit your personal details and settings.</p>
+                    <a href="#">Go to Profile Settings</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Your Ride Service. All rights reserved.</p>
+        <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        const predefinedLocations = [
+            "Ghanta Ghar, Meerut", "Begum Bagh, Meerut", "Pallavpuram, Meerut", "Modipuram, Meerut",
+            "Sadar Bazaar, Meerut", "Roorkee Road, Meerut", "Delhi Road, Meerut",
+            "Haridwar Junction", "Har Ki Pauri", "BHEL Township, Haridwar", "Rishikul, Haridwar", "SIDCUL, Haridwar",
+            "ISBT Dehradun", "Clock Tower, Dehradun", "Prem Nagar, Dehradun", "Graphic Era, Dehradun", "Rajpur Road, Dehradun"
+        ];
+
+
+        function suggestLocations(inputType) {
+            const inputElement = document.getElementById(inputType + '-location');
+            const suggestionsElement = document.getElementById(inputType + '-suggestions');
+            const inputText = inputElement.value.toLowerCase();
+
+            suggestionsElement.innerHTML = '';
+
+            if (inputText.length > 0) {
+                const matchingLocations = predefinedLocations.filter(location =>
+                    location.toLowerCase().includes(inputText)
+                );
+
+                matchingLocations.forEach(location => {
+                    const li = document.createElement('li');
+                    li.textContent = location;
+                    li.onclick = () => {
+                        inputElement.value = location;
+                        suggestionsElement.innerHTML = '';
+                    };
+                    suggestionsElement.appendChild(li);
+                });
+            }
+        }
+
+        // Graph data
+        const locationGraph = {
+    // Meerut Locations
+    "Ghanta Ghar, Meerut": {
+        "Begum Bagh, Meerut": 2,
+        "Sadar Bazaar, Meerut": 3
+    },
+    "Begum Bagh, Meerut": {
+        "Ghanta Ghar, Meerut": 2,
+        "Pallavpuram, Meerut": 5,
+        "Roorkee Road, Meerut": 4
+    },
+    "Pallavpuram, Meerut": {
+        "Begum Bagh, Meerut": 5,
+        "Modipuram, Meerut": 3
+    },
+    "Modipuram, Meerut": {
+        "Pallavpuram, Meerut": 3,
+        "Delhi Road, Meerut": 6
+    },
+    "Sadar Bazaar, Meerut": {
+        "Ghanta Ghar, Meerut": 3,
+        "Roorkee Road, Meerut": 1
+    },
+    "Roorkee Road, Meerut": {
+        "Begum Bagh, Meerut": 4,
+        "Sadar Bazaar, Meerut": 1,
+        "Delhi Road, Meerut": 2
+    },
+    "Delhi Road, Meerut": {
+        "Modipuram, Meerut": 6,
+        "Roorkee Road, Meerut": 2,
+        "Haridwar Junction": 50  
+    },
+
+    // Haridwar Locations
+    "Haridwar Junction": {
+        "Delhi Road, Meerut": 50,
+        "Har Ki Pauri": 2,
+        "BHEL Township, Haridwar": 4
+    },
+    "Har Ki Pauri": {
+        "Haridwar Junction": 2,
+        "Rishikul, Haridwar": 3
+    },
+    "BHEL Township, Haridwar": {
+        "Haridwar Junction": 4,
+        "SIDCUL, Haridwar": 5
+    },
+    "Rishikul, Haridwar": {
+        "Har Ki Pauri": 3,
+        "SIDCUL, Haridwar": 2
+    },
+    "SIDCUL, Haridwar": {
+        "Rishikul, Haridwar": 2,
+        "BHEL Township, Haridwar": 5,
+        "ISBT Dehradun": 45
+    },
+
+    // Dehradun Locations
+    "ISBT Dehradun": {
+        "SIDCUL, Haridwar": 45,
+        "Clock Tower, Dehradun": 5,
+        "Prem Nagar, Dehradun": 8
+    },
+    "Clock Tower, Dehradun": {
+        "ISBT Dehradun": 5,
+        "Rajpur Road, Dehradun": 3
+    },
+    "Prem Nagar, Dehradun": {
+        "ISBT Dehradun": 8,
+        "Graphic Era, Dehradun": 4
+    },
+    "Graphic Era, Dehradun": {
+        "Prem Nagar, Dehradun": 4,
+        "Rajpur Road, Dehradun": 6
+    },
+    "Rajpur Road, Dehradun": {
+        "Clock Tower, Dehradun": 3,
+        "Graphic Era, Dehradun": 6
+    }
+};
+
+        // Driver locations
+        const drivers = [
+    { id: 1, name: "Driver Amit", location: "Ghanta Ghar, Meerut" },
+    { id: 2, name: "Driver Birjesh", location: "Pallavpuram, Meerut" },
+    { id: 3, name: "Driver Deepak", location: "Roorkee Road, Meerut" },
+    { id: 4, name: "Driver Rohit", location: "Haridwar Junction" },
+    { id: 5, name: "Driver Shobhit", location: "ISBT Dehradun" },
+    { id: 6, name: "Driver Neeraj", location: "Graphic Era, Dehradun" }
+];
+
+
+        // Modified Dijkstra function to return both distances and predecessors
+        function dijkstra(graph, startNode) {
+            const distances = {};
+            const predecessors = {}; // To store the path
+            const visited = {};
+            const priorityQueue = [{ node: startNode, distance: 0 }];
+
+            for (const node in graph) {
+                distances[node] = Infinity;
+                predecessors[node] = null;
+            }
+            distances[startNode] = 0;
+
+            while (priorityQueue.length > 0) {
+                priorityQueue.sort((a, b) => a.distance - b.distance);
+                const { node, distance } = priorityQueue.shift();
+
+                if (visited[node]) {
+                    continue;
+                }
+                visited[node] = true;
+
+                for (const neighbor in graph[node]) {
+                    const newDistance = distance + graph[node][neighbor];
+                    if (newDistance < distances[neighbor]) {
+                        distances[neighbor] = newDistance;
+                        predecessors[neighbor] = node; // Store the predecessor
+                        priorityQueue.push({ node: neighbor, distance: newDistance });
+                    }
+                }
+            }
+            return { distances, predecessors }; // Return both
+        }
+
+        // Function to reconstruct the path
+        function reconstructPath(predecessors, startNode, endNode) {
+            const path = [];
+            let currentNode = endNode;
+            while (currentNode !== null) {
+                path.unshift(currentNode); // Add to the beginning of the array
+                if (currentNode === startNode) break; // Stop when we reach the start
+                currentNode = predecessors[currentNode];
+            }
+            // Check if a path was actually found (e.g., if endNode was reachable from startNode)
+            if (path[0] !== startNode) {
+                return null; // No path found
+            }
+            return path;
+        }
+
+
+        async function findNearestDriver() {
+            const pickupLocationInput = document.getElementById('pickup-location');
+            const destinationInput = document.getElementById('destination');
+            const pickupLocation = pickupLocationInput.value;
+            const destination = destinationInput.value;
+
+            if (!pickupLocation || !destination) {
+                alert("Please enter both pickup and destination locations.");
+                return;
+            }
+
+            // In a real application, you'd fetch available drivers dynamically
+            // For now, we use the hardcoded `drivers` array
+            const availableDrivers = drivers.filter(driver => driver.location);
+
+            if (availableDrivers.length === 0) {
+                alert("No drivers available at the moment.");
+                return;
+            }
+
+            const { distances: pickupDistances } = dijkstra(locationGraph, pickupLocation);
+            let nearestDriver = null;
+            let minDistance = Infinity;
+
+            availableDrivers.forEach(driver => {
+                if (pickupDistances[driver.location] !== undefined && pickupDistances[driver.location] < minDistance) {
+                    minDistance = pickupDistances[driver.location];
+                    nearestDriver = driver;
+                }
+            });
+
+            if (nearestDriver) {
+                const confirmBooking = confirm(`Nearest driver: ${nearestDriver.name} is approximately ${minDistance} km away. Do you want to book a ride with this driver?`);
+                if (confirmBooking) {
+                    await bookRide(pickupLocation, destination, nearestDriver.id);
+                }
+            } else {
+                alert("No drivers found in reachable locations.");
+            }
+        }
+
+        async function bookRide(pickupLocation, destination, driverId) {
+            try {
+                // Calculate shortest distance and path between source and destination
+                const { distances: sourceToDestDistances, predecessors: sourceToDestPredecessors } = dijkstra(locationGraph, pickupLocation);
+                const shortestDistance = sourceToDestDistances[destination];
+                const shortestPathArray = reconstructPath(sourceToDestPredecessors, pickupLocation, destination);
+
+                if (shortestDistance === Infinity || shortestPathArray === null) {
+                    alert("Cannot calculate distance or find a path between the selected locations. Please check the locations.");
+                    return;
+                }
+
+                const shortestPathString = shortestPathArray.join(' -> ');
+
+                const response = await fetch('/api/book_ride', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pickup_location: pickupLocation,
+                        dropoff_location: destination,
+                        driver_id: driverId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`Ride successfully booked with ${data.driver_name}! Shortest distance from source to destination: ${shortestDistance} km.\nPath: ${shortestPathString}\nFare: Rs. ${data.fare.toFixed(2)}`);
+                    // Optionally, clear the form or redirect
+                    document.getElementById('pickup-location').value = '';
+                    document.getElementById('destination').value = '';
+                    window.location.reload(); // Reload dashboard to update ride history
+                } else {
+                    alert(`Failed to book ride: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error("Error booking ride:", error);
+                alert("An error occurred while booking your ride. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
